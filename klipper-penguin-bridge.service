@@ -4,8 +4,8 @@ Wants=network.target
 After=network.target
 
 [Service]
-WorkingDirectory=/apps/klipperPenguinBridge/
-ExecStart=/apps/klipperPenguinBridge/.venv/bin/python /apps/klipperPenguinBridge/klipper-penguin-bridge.py
+WorkingDirectory=/gutenberg/apps/klipperPenguinBridge/
+ExecStart=/gutenberg/apps/klipperPenguinBridge/.venv/bin/python /gutenberg/apps/klipperPenguinBridge/klipper-penguin-bridge.py
 Restart=always
 StandardOutput=null
 StandardError=journal

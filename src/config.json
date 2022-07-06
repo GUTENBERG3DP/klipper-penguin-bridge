@@ -16,18 +16,6 @@
         "execTimeout": 1,
         "variableName": "wlan0_ip",
         "isNumber" : false
-      },
-      {
-        "command": "uname -r",
-        "execTimeout": 1,
-        "variableName": "kernel_version",
-        "isNumber" : false
-      },
-      {
-        "command": "date +%s",
-        "execTimeout": 1,
-        "variableName": "unix_time",
-        "isNumber" : true
       }
     ]
   }

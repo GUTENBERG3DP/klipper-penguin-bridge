@@ -6,7 +6,7 @@ if [[ $(/usr/bin/id -u) -ne 0 ]]; then
 fi
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-APP_DIR="/apps/klipperPenguinBridge/"
+APP_DIR="/gutenberg/apps/klipperPenguinBridge/"
 KLIPPER_CONFIG_DIR="/home/pi/klipper_config/"
 KLIPPER_USER="pi"
 

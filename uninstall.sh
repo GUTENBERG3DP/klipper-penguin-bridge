@@ -5,7 +5,7 @@ if [[ $(/usr/bin/id -u) -ne 0 ]]; then
     exit
 fi
 
-APP_DIR="/apps/klipperPenguinBridge/"
+APP_DIR="/gutenberg/apps/klipperPenguinBridge/"
 
 systemctl stop klipper-penguin-bridge
 rm /etc/systemd/system/klipper-penguin-bridge.service

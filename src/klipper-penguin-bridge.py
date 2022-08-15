@@ -46,7 +46,7 @@ class SystemConfig(object):
 
 class Task(object):
     def __init__(self, rawObj):
-        if "command" not in rawObj or "execTimeout" not in rawObj or "variableName" not in rawObj or "isNumber" not in rawObj:
+        if "command" not in rawObj or "execTimeout" not in rawObj or "variableName" not in rawObj or "variableType" not in rawObj:
             raise ValueError("Missing parameter(s)")
         if type(rawObj["command"]) != str or rawObj["command"] == "":
             raise ValueError("Invalid command")
@@ -54,13 +54,13 @@ class Task(object):
             raise ValueError("Invalid variableName")
         if type(rawObj["execTimeout"]) != int or rawObj["execTimeout"] <= 0:
             raise ValueError("Invalid execTimeout")
-        if not isinstance(rawObj["isNumber"], bool):
-            raise ValueError("Invalid isNumber")
+        if type(rawObj["variableType"]) != str or (rawObj["variableType"] != "string" and rawObj["variableType"] != "number" and rawObj["variableType"] != "boolean") :
+            raise ValueError("Invalid variableType")
 
         self.command = rawObj["command"]
         self.execTimeout = rawObj["execTimeout"]
         self.variableName = rawObj["variableName"]
-        self.isNumber = rawObj["isNumber"]
+        self.variableType = rawObj["variableType"]
 
 class TaskRunner(object):
     def __init__(self, config):
@@ -78,21 +78,28 @@ class TaskRunner(object):
         except Exception as e:
             logging.error("Exception" + str(e))
             logging.error("Error" + str(stderr))
-            return "none"
+            return ""
 
         resultStr = stdout.decode('utf-8').replace("\n", "")
-        if resultStr == "":
-            return "none"
+        # if resultStr == "":
+        #     return "none"
 
         return resultStr
 
-    def _updateVarValue(self, varName, isNumber, varValue):
+    def _updateVarValue(self, varName, variableType, varValue):
 
         postData = ""
-        if isNumber:
-            postData = {"commands": ["SET_GCODE_VARIABLE MACRO=KLIPPER_PENGUIN_BRIDGE VARIABLE=" + varName + " VALUE=" + varValue ]}
-        else:
+        if variableType == "string":
             postData = {"commands": ["SET_GCODE_VARIABLE MACRO=KLIPPER_PENGUIN_BRIDGE VARIABLE=" + varName + " VALUE=\'\"" + varValue + "\"\'"]}
+        elif variableType == "number":
+            postData = {"commands": ["SET_GCODE_VARIABLE MACRO=KLIPPER_PENGUIN_BRIDGE VARIABLE=" + varName + " VALUE=" + varValue ]}
+        elif variableType == "boolean":
+            postData = {"commands": ["SET_GCODE_VARIABLE MACRO=KLIPPER_PENGUIN_BRIDGE VARIABLE=" + varName + " VALUE=" + str(varValue).capitalize() ]}
+        else:
+            return False
+
+        logging.debug(str(postData))
+            
 
         url = "http://" + self.config.moonrakerHost + ":" + str(self.config.moonrakerPort) + "/api/printer/command"
 
@@ -119,17 +126,19 @@ class TaskRunner(object):
             logging.error("exception" + str(e))
             return None
 
-    def _needUpdate(self,resultValue, variableName, isNumber,currentState):
+    def _needUpdate(self,resultValue, variableName, variableType,currentState):
         if currentState == None:
             return False
 
         try:
-            if isNumber:
+            if variableType == "string":
+                return resultValue != currentState[variableName]
+            elif variableType == "number":
                 return float(resultValue) != currentState[variableName]
-            else:
+            elif variableType == "boolean":
                 return resultValue != currentState[variableName]
         except Exception as e:
-            logging.error("Exception" + str(e))
+            logging.error("Exception _needUpdate" + str(e))
             return False
 
 
@@ -140,13 +149,16 @@ class TaskRunner(object):
             logging.info("\t" + "# Exec command for " + task.variableName + " variable")
             resultStr = self._getExecResult(command=task.command, timeout=task.execTimeout)
             logging.info("\t" + "RESULT : " + resultStr)
-            if self._needUpdate(resultStr, task.variableName, task.isNumber, currentState):
-                if self._updateVarValue(task.variableName,task.isNumber, resultStr):
-                    logging.info("\t" + "Api update success")
+            if resultStr != "":
+                if self._needUpdate(resultStr, task.variableName, task.variableType, currentState):
+                    if self._updateVarValue(task.variableName,task.variableType, resultStr):
+                        logging.info("\t" + "Api update success")
+                    else:
+                        logging.info("\t" + "Api update failed")
                 else:
-                    logging.info("\t" + "Api update failed")
+                    logging.info("\t" + "Skip api update")
             else:
-                logging.info("\t" + "Skip api update")
+                logging.info("\t" + "Skip api update : no exec result")
 
 
 def main():

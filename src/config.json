@@ -6,16 +6,22 @@
     "debug" : false,
     "taskList": [
       {
-        "command": "ip addr show eth0 | grep 'inet' | head -n 1 | awk '/inet/ {print $2}' | cut -d'/' -f1 | grep -oE \"\\b([0-9]{1,3}\\.){3}[0-9]{1,3}\\b\"",
+        "command": "/gutenberg/apps/klipperPenguinBridge/script/get-if-ip-addr.py eth0",
         "execTimeout": 1,
         "variableName": "eth0_ip",
-        "isNumber" : false
+        "variableType" : "string"
       },
       {
-        "command": "ip addr show wlan0 | grep 'inet' | head -n 1 | awk '/inet/ {print $2}' | cut -d'/' -f1 | grep -oE \"\\b([0-9]{1,3}\\.){3}[0-9]{1,3}\\b\"",
+        "command": "/gutenberg/apps/klipperPenguinBridge/script/get-if-ip-addr.py wlan0",
         "execTimeout": 1,
         "variableName": "wlan0_ip",
-        "isNumber" : false
+        "variableType" : "string"
+      },
+      {
+        "command": "/gutenberg/apps/klipperPenguinBridge/script/sd-wifi-config-file-available.py",
+        "execTimeout": 1,
+        "variableName": "wifi_config_available",
+        "variableType" : "boolean"
       }
     ]
   }

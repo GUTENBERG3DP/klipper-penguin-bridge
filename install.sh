@@ -21,6 +21,7 @@ mkdir -p "$APP_DIR"
 
 # copy files over
 yes | cp -R "src/klipper-penguin-bridge.py" "$APP_DIR"
+yes | cp -R "src/script" "$APP_DIR"
 yes | cp -R "src/config.json" "$APP_DIR"
 yes | cp -R "src/klipper_penguin_bridge.cfg" "$KLIPPER_CONFIG_DIR"
 # change file permission

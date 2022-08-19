@@ -16,12 +16,6 @@
         "execTimeout": 1,
         "variableName": "wlan0_ip",
         "variableType" : "string"
-      },
-      {
-        "command": "/gutenberg/apps/klipperPenguinBridge/script/sd-wifi-config-file-available.py",
-        "execTimeout": 1,
-        "variableName": "wifi_config_available",
-        "variableType" : "boolean"
       }
     ]
   }
